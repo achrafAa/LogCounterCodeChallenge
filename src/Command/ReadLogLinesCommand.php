@@ -16,7 +16,7 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
     name: 'log-counter:read-new-line',
     description: 'Reads new line from log file',
 )]
-class ReadLogLineCommand extends Command
+class ReadLogLinesCommand extends Command
 {
     private ParameterBagInterface $params;
 
@@ -38,6 +38,7 @@ class ReadLogLineCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
         $io->info('reading a new line from log file command triggered ');
 
         $fileName = $this->params->get('env(LOG_FILE_NAME)');
@@ -55,19 +56,18 @@ class ReadLogLineCommand extends Command
 
         $io->info('file found, Getting record');
 
-        $line = $this->readNextUnprocessedLineService->read($filePath, $positionFilePath);
+        while (true) {
+            $line = $this->readNextUnprocessedLineService->read($filePath, $positionFilePath);
 
-        if (! $line) {
-            $io->info('no new line found');
-            return Command::SUCCESS;
+            if (! $line) {
+                $io->info('no new line found');
+                return Command::SUCCESS;
+            }
+            try {
+                $this->parseRawLogLineDispatchService->dispatch($line);
+            } catch (ExceptionInterface $e) {
+                $io->error('an error occurred while dispatching parse message' . $e->getMessage());
+            }
         }
-        try {
-            $this->parseRawLogLineDispatchService->dispatch($line);
-        } catch (ExceptionInterface $e) {
-            $io->error('an error occurred while dispatching parse message' . $e->getMessage());
-        }
-
-
-        return Command::SUCCESS;
     }
 }

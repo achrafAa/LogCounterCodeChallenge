@@ -2,7 +2,7 @@
 
 namespace App\Tests\Command;
 
-use App\Command\ReadLogLineCommand;
+use App\Command\ReadLogLinesCommand;
 use App\Service\ParseRawLogLineDispatchService;
 use App\Service\ReadNextUnprocessedLineService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -14,8 +14,11 @@ use Zenstruck\Messenger\Test\InteractsWithMessenger;
 /***
  * @covers \App\Command\ReadLogLineCommand
  * @covers \App\Service\ReadNextUnprocessedLineService
+ * @covers \App\Service\PersistLogLineDispatchService
+ * @covers \App\Service\PersistLogLineToDataBaseService
+ * @covers \App\Service\ParseRawLogLineDispatchService
  */
-class ReadLogLineCommandTest extends KernelTestCase
+class ReadLogLinesCommandTest extends KernelTestCase
 {
     use InteractsWithMessenger;
 
@@ -29,13 +32,16 @@ class ReadLogLineCommandTest extends KernelTestCase
     public function testExecute(): void
     {
         $kernel = self::$kernel;
-        $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs.log');
+        $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs-test.log');
         $this->assertFileExists($logFilePath);
+
+        $positionFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'position-test.txt');
+        file_put_contents($positionFilePath,'0');
+        $this->assertFileExists($positionFilePath);
 
         $this->transport()->queue()->assertEmpty();
 
         $readNextUnprocessedLineService = new ReadNextUnprocessedLineService();
-
 
         $parseRawLogLineDispatchService = new ParseRawLogLineDispatchService($this->bus());
 
@@ -43,12 +49,12 @@ class ReadLogLineCommandTest extends KernelTestCase
 
         $parameterBagMock->method('get')->willReturnMap([
             ['kernel.project_dir', $kernel->getProjectDir()],
-            ['env(LOG_FILE_NAME)', 'logs.log'],
-            ['env(POSITION_FILE_NAME)', 'position.txt'],
+            ['env(LOG_FILE_NAME)', 'logs-test.log'],
+            ['env(POSITION_FILE_NAME)', 'position-test.txt'],
         ]);
 
 
-        $command = new ReadLogLineCommand(
+        $command = new ReadLogLinesCommand(
             $parameterBagMock,
             $readNextUnprocessedLineService,
             $parseRawLogLineDispatchService
@@ -60,14 +66,14 @@ class ReadLogLineCommandTest extends KernelTestCase
         $this->assertStringContainsString('reading a new line from log file command triggered', $commandTester->getDisplay());
         $this->assertStringContainsString('file found, Getting record', $commandTester->getDisplay());
 
-        $positionFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'position.txt');
-        $this->assertFileExists($positionFilePath);
-        $this->transport()->queue()->assertCount(1);
+        $this->transport()->queue()->assertCount(20);
+        $this->transport()->process(20);
+        $this->transport()->queue()->assertCount(0);
     }
 
     private function createTestLogFileIfDoesNotExist(?KernelInterface $kernel): void
     {
-        $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs.log');
+        $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs-test.log');
         if (file_exists($logFilePath)) {
             return;
         }
@@ -94,6 +100,6 @@ USER-SERVICE - - [18/Aug/2018:10:32:56 +0000] "POST /users HTTP/1.1" 201
 USER-SERVICE - - [18/Aug/2018:10:33:59 +0000] "POST /users HTTP/1.1" 201
 EOD;
 
-        file_put_contents(sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs.log'), $data);
+        file_put_contents(sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs-test.log'), $data);
     }
 }
