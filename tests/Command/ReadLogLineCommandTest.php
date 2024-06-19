@@ -10,6 +10,10 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/***
+ * @covers \App\Command\ReadLogLineCommand
+ * @covers \App\Service\ReadNextUnprocessedLineService
+ */
 class ReadLogLineCommandTest extends KernelTestCase
 {
     protected function setUp(): void
