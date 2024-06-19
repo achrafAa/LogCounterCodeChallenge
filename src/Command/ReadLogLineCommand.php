@@ -17,20 +17,19 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class ReadLogLineCommand extends Command
 {
     private ParameterBagInterface $params;
-    private ReadNextUnprocessedLineService  $readNextUnprocessedLineService;
+
+    private ReadNextUnprocessedLineService $readNextUnprocessedLineService;
 
     public function __construct(
         ParameterBagInterface $params,
         ReadNextUnprocessedLineService $readNextUnprocessedLineService
-    )
-    {
+    ) {
         parent::__construct();
         $this->params = $params;
         $this->readNextUnprocessedLineService = $readNextUnprocessedLineService;
     }
 
-
-    protected function execute(InputInterface $input, OutputInterface $output ): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->info('reading a new line from log file command triggered ');
@@ -43,17 +42,17 @@ class ReadLogLineCommand extends Command
 
         $io->info('checking file existence ');
 
-        if (!file_exists($filePath)) {
-            $io->error("The file $fileName does not exist.");
+        if (! file_exists($filePath)) {
+            $io->error("The file {$fileName} does not exist.");
             return Command::FAILURE;
         }
 
         $io->info('file found, Getting record ...');
 
-        $line = $this->readNextUnprocessedLineService->read($filePath,$positionFilePath);
+        $line = $this->readNextUnprocessedLineService->read($filePath, $positionFilePath);
 
-        if (!$line){
-            $io->info("no new line found");
+        if (! $line) {
+            $io->info('no new line found');
             return Command::SUCCESS;
         }
 
