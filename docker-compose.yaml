@@ -1,0 +1,84 @@
+version: '3'
+
+networks:
+  loganalyzerapi:
+
+services:
+  webapp:
+    build :
+      context: .
+      dockerfile: .docker/nginx.dockerfile
+      args:
+        - NGINXUSER=${NGINXUSER:-www-data}
+        - NGINXGROUP=${NGINXGROUP:-www-data}
+    container_name : nginx
+    ports :
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html/
+    depends_on:
+      - php
+      - mysql
+      - redis
+    networks:
+      - loganalyzerapi
+
+  mysql:
+    image:  mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_DATABASE: loganalyzer
+      MYSQL_USER: user
+      MYSQL_PASSWORD: strongPassword
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+#    volumes:
+#      - ./.mysql:/var/lib/mysql
+    networks:
+      - loganalyzerapi
+
+  php:
+    build:
+      context: .
+      dockerfile: .docker/php.dockerfile
+      args:
+        - PHPUSER=${PHPUSER:-www-data}
+        - PHPGROUP=${PHPGROUP:-www-data}
+    container_name: php
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - loganalyzerapi
+
+  composer:
+    build:
+      context: .
+      dockerfile: .docker/composer.dockerfile
+      args:
+        - PHPUSER=${PHPUSER:-www-data}
+        - PHPGROUP=${PHPGROUP:-www-data}
+    container_name: composer
+    volumes:
+      - ./:/var/www/html:delegated
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    user: ${PHPUSER:-www-data}
+    entrypoint: [ 'composer' ]
+    networks:
+      - loganalyzerapi
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - loganalyzerapi
