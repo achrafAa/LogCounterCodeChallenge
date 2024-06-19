@@ -2,17 +2,17 @@
 
 namespace App\Dto;
 
-use DateTime;
+use DateTimeImmutable;
 
 class LogLineDto
 {
     private string $serviceName;
 
-    private DateTime $date;
+    private DateTimeImmutable $date;
 
     private int $statusCode;
 
-    public function __construct(string $serviceName, DateTime $date, int $statusCode)
+    public function __construct(string $serviceName, DateTimeImmutable $date, int $statusCode)
     {
         $this->serviceName = $serviceName;
         $this->date = $date;
@@ -24,7 +24,7 @@ class LogLineDto
         return $this->serviceName;
     }
 
-    public function getDate(): DateTime
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }
