@@ -14,7 +14,7 @@ class LogController extends AbstractController
     {
 
         return $this->json([
-            'counter' => 0,
+            'counter' => 20,
         ]);
     }
 }

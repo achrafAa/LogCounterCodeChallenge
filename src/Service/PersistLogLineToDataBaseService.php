@@ -16,7 +16,6 @@ class PersistLogLineToDataBaseService
 
     public function persist(LogLineDto $logLineDto): bool
     {
-        dump($this->logRepository->addLogRecord($logLineDto));
         return $this->logRepository->addLogRecord($logLineDto);
     }
 }
