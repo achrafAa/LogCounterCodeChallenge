@@ -1,17 +1,12 @@
 <?php
 
-namespace App\Tests\Controller\API;
+namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class LogControllerTest extends WebTestCase
 {
-    protected function setUp(): void
-    {
-        self::ensureKernelShutdown();
-    }
-
-    public function testCountEndpointRouteExists(): void
+     public function testCountEndpointRouteExists(): void
     {
         $client = static::createClient();
         $client->request('GET', '/count');
