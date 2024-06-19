@@ -36,7 +36,7 @@ class ReadLogLinesCommandTest extends KernelTestCase
         $this->assertFileExists($logFilePath);
 
         $positionFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'position-test.txt');
-        file_put_contents($positionFilePath,'0');
+        file_put_contents($positionFilePath, '0');
         $this->assertFileExists($positionFilePath);
 
         $this->transport()->queue()->assertEmpty();
