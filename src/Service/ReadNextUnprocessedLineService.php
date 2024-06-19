@@ -20,7 +20,6 @@ class ReadNextUnprocessedLineService
     {
         $this->openFile($filePath);
 
-
         $currentPosition = file_exists($positionFilePath) ? (int) file_get_contents($positionFilePath) : 0;
         fseek($this->fileHandle, $currentPosition);
 

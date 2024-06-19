@@ -34,7 +34,7 @@ class ReadLogLineCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->info('reading a new line from log file command triggered ');
 
-        $fileName = $this->params->get('env(FILE_NAME)');
+        $fileName = $this->params->get('env(LOG_FILE_NAME)');
         $filePath = sprintf('%s/var/%s', $this->params->get('kernel.project_dir'), $fileName);
 
         $positionFileNAME = $this->params->get('env(POSITION_FILE_NAME)');
