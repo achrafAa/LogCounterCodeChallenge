@@ -7,10 +7,15 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/doctrine-bundle": "^2.12",
+        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/orm": "^3.2",
         "symfony/console": "7.1.*",
+        "symfony/doctrine-messenger": "7.1.*",
         "symfony/dotenv": "7.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.1.*",
+        "symfony/messenger": "7.1.*",
         "symfony/runtime": "7.1.*",
         "symfony/yaml": "7.1.*"
     },
@@ -22,7 +27,8 @@
         "symfony/css-selector": "7.1.*",
         "symfony/maker-bundle": "^1.60",
         "symfony/phpunit-bridge": "^7.1",
-        "symplify/easy-coding-standard": "^12.3"
+        "symplify/easy-coding-standard": "^12.3",
+        "zenstruck/messenger-test": "^1.9"
     },
     "config": {
         "allow-plugins": {

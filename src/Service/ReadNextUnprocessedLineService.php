@@ -33,7 +33,7 @@ class ReadNextUnprocessedLineService
         return $line;
     }
 
-    public function openFile(string $filePath): void
+    private function openFile(string $filePath): void
     {
         $this->fileHandle = fopen($filePath, 'r');
         if (! $this->fileHandle) {
@@ -41,7 +41,7 @@ class ReadNextUnprocessedLineService
         }
     }
 
-    public function closeFile(): void
+    private function closeFile(): void
     {
         if ($this->fileHandle !== null) {
             fclose($this->fileHandle);

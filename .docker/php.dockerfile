@@ -17,11 +17,16 @@ RUN sed -i "s/group = www-data/group = ${PHPGROUP}/g" /usr/local/etc/php-fpm.d/w
 
 RUN docker-php-ext-install pdo pdo_mysql
 
+RUN apk add --no-cache rabbitmq-c-dev \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp
 
-RUN mkdir -p /usr/src/php/ext/redis \
-    && curl -L https://github.com/phpredis/phpredis/archive/5.3.4.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
-    && echo 'redis' >> /usr/src/php-available-exts \
-    && docker-php-ext-install redis
+
+#RUN mkdir -p /usr/src/php/ext/redis \
+#    && curl -L https://github.com/phpredis/phpredis/archive/5.3.4.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
+#    && echo 'redis' >> /usr/src/php-available-exts \
+#    && docker-php-ext-install redis
+
 
 RUN echo 'memory_limit = 256M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
 

@@ -3,12 +3,13 @@
 namespace App\Tests\Command;
 
 use App\Command\ReadLogLineCommand;
+use App\Service\ParseRawLogLineDispatchService;
 use App\Service\ReadNextUnprocessedLineService;
-use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Zenstruck\Messenger\Test\InteractsWithMessenger;
 
 /***
  * @covers \App\Command\ReadLogLineCommand
@@ -16,47 +17,55 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class ReadLogLineCommandTest extends KernelTestCase
 {
+    use InteractsWithMessenger;
+
     protected function setUp(): void
     {
         parent::setUp();
-        self::bootKernel();
+        $this->bootKernel();
         $this->createTestLogFileIfDoesNotExist(self::$kernel);
     }
 
     public function testExecute(): void
     {
         $kernel = self::$kernel;
-
         $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs.log');
         $this->assertFileExists($logFilePath);
 
-        $parameterBagMock = $this->mockParameterBag($kernel);
+        $this->transport()->queue()->assertEmpty();
+
         $readNextUnprocessedLineService = new ReadNextUnprocessedLineService();
 
-        $command = new ReadLogLineCommand($parameterBagMock, $readNextUnprocessedLineService);
-        $commandTester = new CommandTester($command);
 
-        $commandTester->execute([]);
+        $parseRawLogLineDispatchService = new ParseRawLogLineDispatchService($this->bus());
 
-        $this->assertStringContainsString('reading a new line from log file command triggered', $commandTester->getDisplay());
-        $this->assertStringContainsString('file found, Getting record ', $commandTester->getDisplay());
-
-        $positionFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'position.txt');
-        $this->assertFileExists($positionFilePath);
-    }
-
-    public function mockParameterBag(KernelInterface $kernel): MockObject
-    {
         $parameterBagMock = $this->createMock(ParameterBagInterface::class);
+
         $parameterBagMock->method('get')->willReturnMap([
             ['kernel.project_dir', $kernel->getProjectDir()],
             ['env(LOG_FILE_NAME)', 'logs.log'],
             ['env(POSITION_FILE_NAME)', 'position.txt'],
         ]);
-        return $parameterBagMock;
+
+
+        $command = new ReadLogLineCommand(
+            $parameterBagMock,
+            $readNextUnprocessedLineService,
+            $parseRawLogLineDispatchService
+        );
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $this->assertStringContainsString('reading a new line from log file command triggered', $commandTester->getDisplay());
+        $this->assertStringContainsString('file found, Getting record', $commandTester->getDisplay());
+
+        $positionFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'position.txt');
+        $this->assertFileExists($positionFilePath);
+        $this->transport()->queue()->assertCount(1);
     }
 
-    private function createTestLogFileIfDoesNotExist(?\Symfony\Component\HttpKernel\KernelInterface $kernel): void
+    private function createTestLogFileIfDoesNotExist(?KernelInterface $kernel): void
     {
         $logFilePath = sprintf('%s/var/%s', $kernel->getProjectDir(), 'logs.log');
         if (file_exists($logFilePath)) {

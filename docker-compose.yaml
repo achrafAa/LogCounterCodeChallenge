@@ -19,7 +19,7 @@ services:
     depends_on:
       - php
       - mysql
-      - redis
+      - rabbitmq
     networks:
       - loganalyzerapi
 
@@ -74,11 +74,19 @@ services:
     networks:
       - loganalyzerapi
 
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:3-management
     ports:
-      - "6379:6379"
-    networks:
-      - loganalyzerapi
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+#  redis:
+#    image: redis:alpine
+#    container_name: redis
+#    restart: unless-stopped
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - loganalyzerapi
