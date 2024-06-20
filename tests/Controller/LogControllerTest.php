@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class LogControllerTest extends WebTestCase
@@ -28,7 +27,6 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(20, $responseData['counter']);
-
     }
 
     public function testCountEndpointWithServiceNameParam(): void
@@ -37,7 +35,7 @@ class LogControllerTest extends WebTestCase
         $serviceNames = implode(',', ['USER-SERVICE']);
 
         $client->request('GET', '/count', [
-            'serviceNames' => $serviceNames
+            'serviceNames' => $serviceNames,
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -48,14 +46,13 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(14, $responseData['counter']);
-
     }
 
     public function testCountEndpointWithStatusCodeParam(): void
     {
         $client = static::createClient();
         $client->request('GET', '/count', [
-            'statusCode' => 400
+            'statusCode' => 400,
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -66,14 +63,13 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(4, $responseData['counter']);
-
     }
 
     public function testCountEndpointWithStartDateParam(): void
     {
         $client = static::createClient();
         $client->request('GET', '/count', [
-            'startDate' => '2018-08-18'
+            'startDate' => '2018-08-18',
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -84,14 +80,13 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(6, $responseData['counter']);
-
     }
 
     public function testCountEndpointWithEndDateParam(): void
     {
         $client = static::createClient();
         $client->request('GET', '/count', [
-            'endDate' => '2018-08-18'
+            'endDate' => '2018-08-18',
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -102,7 +97,6 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(14, $responseData['counter']);
-
     }
 
     public function testCountEndpointWithEndDateAndServiceNameParams(): void
@@ -113,7 +107,7 @@ class LogControllerTest extends WebTestCase
 
         $client->request('GET', '/count', [
             'serviceNames' => $serviceNames,
-            'endDate' => '2018-08-18'
+            'endDate' => '2018-08-18',
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -124,6 +118,5 @@ class LogControllerTest extends WebTestCase
         $this->assertIsInt($responseData['counter']);
 
         $this->assertEquals(9, $responseData['counter']);
-
     }
 }

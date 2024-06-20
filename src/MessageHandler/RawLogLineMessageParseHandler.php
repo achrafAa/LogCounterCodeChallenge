@@ -19,6 +19,7 @@ final readonly class RawLogLineMessageParseHandler
         private MessageBusInterface $messageBus,
     ) {
     }
+
     /**
      * @throws ExceptionInterface
      */
@@ -31,6 +32,7 @@ final readonly class RawLogLineMessageParseHandler
                 )
             ));
     }
+
     private function parseLogLine(string $line): LogLineDto
     {
         $pattern = '/(?P<serviceName>[\w\-]+) - - \[(?P<date>[^\]]+)\] "[^"]*" (?P<statusCode>\d+)/';

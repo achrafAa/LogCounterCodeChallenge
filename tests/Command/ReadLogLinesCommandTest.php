@@ -22,6 +22,7 @@ class ReadLogLinesCommandTest extends KernelTestCase
 {
     use InteractsWithMessenger;
     use ReloadDatabaseTrait;
+
     protected function setUp(): void
     {
         parent::setUp();
