@@ -1,5 +1,3 @@
-version: '3'
-
 networks:
   loganalyzerapi:
 
@@ -19,6 +17,7 @@ services:
     depends_on:
       - php
       - mysql
+      - cron
     networks:
       - loganalyzerapi
 
@@ -70,6 +69,19 @@ services:
       - php
     user: ${PHPUSER:-www-data}
     entrypoint: [ 'composer' ]
+    networks:
+      - loganalyzerapi
+
+  cron:
+    build:
+      context: .
+      dockerfile: .docker/cron.dockerfile
+    container_name: cron
+    entrypoint: [ "bash", "-c", "cron -f"]
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/var/www/html
     networks:
       - loganalyzerapi
 

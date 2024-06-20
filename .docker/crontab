@@ -1,0 +1,2 @@
+* * * * * /usr/local/bin/php /var/www/html/bin/console  log-counter:read-new-line >> /var/www/html/var/cron-app.log 2>&1
+* * * * * /usr/local/bin/php /var/www/html/bin/console  messenger:consume async >> /var/www/html/var/cron-queue.log 2>&1
