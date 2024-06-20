@@ -19,7 +19,6 @@ services:
     depends_on:
       - php
       - mysql
-      - rabbitmq
     networks:
       - loganalyzerapi
 
@@ -82,7 +81,7 @@ services:
 #    environment:
 #      RABBITMQ_DEFAULT_USER: user
 #      RABBITMQ_DEFAULT_PASS: password
-
+#
 #  redis:
 #    image: redis:alpine
 #    container_name: redis

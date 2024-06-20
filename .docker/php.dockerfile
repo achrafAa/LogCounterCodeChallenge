@@ -17,9 +17,9 @@ RUN sed -i "s/group = www-data/group = ${PHPGROUP}/g" /usr/local/etc/php-fpm.d/w
 
 RUN docker-php-ext-install pdo pdo_mysql
 
-RUN apk add --no-cache rabbitmq-c-dev \
-    && pecl install amqp \
-    && docker-php-ext-enable amqp
+#RUN apk add --no-cache rabbitmq-c-dev \
+#    && pecl install amqp \
+#    && docker-php-ext-enable amqp
 
 
 #RUN mkdir -p /usr/src/php/ext/redis \

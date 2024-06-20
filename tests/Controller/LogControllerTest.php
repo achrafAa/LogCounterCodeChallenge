@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Repository\LogRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class LogControllerTest extends WebTestCase
