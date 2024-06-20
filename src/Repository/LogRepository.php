@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Dto\LogFilterDto;
 use App\Dto\LogLineDto;
 use App\Entity\Log;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -13,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LogRepository extends ServiceEntityRepository implements LogRecordsInterface
 {
-    private \Doctrine\ORM\EntityManagerInterface $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
@@ -21,55 +22,40 @@ class LogRepository extends ServiceEntityRepository implements LogRecordsInterfa
         $this->entityManager = $entityManager;
     }
 
-    public function getLogRecordsCount(array $filters = []): int
+    public function getLogRecordsCount(LogFilterDto $logFilters): int
     {
         $qb = $this->createQueryBuilder('l')
             ->select('COUNT(l.id)');
 
-        if (empty($filters)) {
-            return (int) $qb->getQuery()->getSingleScalarResult();
-        }
-
-        if (! empty($filters['serviceNames'])) {
+        if (! empty($logFilters->serviceNames)) {
             $qb->andWhere('l.serviceName IN (:serviceNames)')
-                ->setParameter('serviceNames', $filters['serviceNames']);
+                ->setParameter('serviceNames', $logFilters->serviceNames);
         }
 
-        if (isset($filters['statusCode']) && $filters['statusCode'] !== '') {
+        if (isset($logFilters->statusCode)) {
             $qb->andWhere('l.statusCode = :statusCode')
-                ->setParameter('statusCode', $filters['statusCode']);
+                ->setParameter('statusCode', $logFilters->statusCode);
         }
 
-        if (isset($filters['startDate']) && $filters['startDate'] !== '') {
+        if (isset($logFilters->startDate)) {
             $qb->andWhere('l.date >= :startDate')
-                ->setParameter('startDate', $filters['startDate']);
+                ->setParameter('startDate', $logFilters->startDate);
         }
 
-        if (isset($filters['endDate']) && $filters['endDate'] !== '') {
+        if (isset($logFilters->endDate)) {
             $qb->andWhere('l.date <= :endDate')
-                ->setParameter('endDate', $filters['endDate']);
+                ->setParameter('endDate', $logFilters->endDate);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function addLogRecord(LogLineDto $logLineDto): bool
+    public function addLogRecord(LogLineDto $logLineDto): void
     {
-        try {
-            $log = new Log();
-            $log->setServiceName($logLineDto->getServiceName());
-            $log->setStatusCode($logLineDto->getStatusCode());
-            $log->setDate($logLineDto->getDate());
-
-            // Persist the entity
-            $this->entityManager->persist($log);
-
-            // Flush the entity manager to write the changes to the database
-            $this->entityManager->flush();
-
-            return true;
-        } catch (\Exception) {
-            return false;
-        }
+        $this->entityManager
+            ->persist(
+                Log::hydrate($logLineDto),
+            );
+        $this->entityManager->flush();
     }
 }

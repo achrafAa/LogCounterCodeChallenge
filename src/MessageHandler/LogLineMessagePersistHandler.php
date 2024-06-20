@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\MessageHandler;
 
 use App\Exception\PersistLogFailedException;
 use App\Message\LogLineMessage;
-use App\Service\PersistLogLineToDataBaseService;
+use App\Repository\LogRecordsInterface;
+use Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class LogLineMessagePersistHandler
+readonly class LogLineMessagePersistHandler
 {
-    private PersistLogLineToDataBaseService $persistLogLineToDataBaseService;
-
-    public function __construct(PersistLogLineToDataBaseService $persistLogLineToDataBaseService)
-    {
-        $this->persistLogLineToDataBaseService = $persistLogLineToDataBaseService;
+    public function __construct(
+        private LogRecordsInterface $logRepository,
+    ) {
     }
 
     /**
@@ -22,8 +23,12 @@ class LogLineMessagePersistHandler
      */
     public function __invoke(LogLineMessage $logLineMessage): void
     {
-        $logLineDto = $logLineMessage->getLogLineDto();
-        if (! $this->persistLogLineToDataBaseService->persist($logLineDto)) {
+        try {
+            $this->logRepository
+                ->addLogRecord(
+                    $logLineMessage->getLogLineDto(),
+                );
+        } catch (Exception) {
             throw new PersistLogFailedException();
         }
     }

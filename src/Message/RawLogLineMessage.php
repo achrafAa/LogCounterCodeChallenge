@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Message;
 
 final class RawLogLineMessage
 {
-    private string $line;
-
-    public function __construct(string $line)
-    {
-        $this->line = $line;
+    public function __construct(
+        private string $line
+    ) {
     }
 
     public function getLine(): string

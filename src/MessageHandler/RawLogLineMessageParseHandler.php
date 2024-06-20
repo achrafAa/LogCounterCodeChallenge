@@ -1,35 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\MessageHandler;
 
 use App\Dto\LogLineDto;
+use App\Message\LogLineMessage;
 use App\Message\RawLogLineMessage;
-use App\Service\PersistLogLineDispatchService;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
-final class RawLogLineMessageParseHandler
+final readonly class RawLogLineMessageParseHandler
 {
-    private PersistLogLineDispatchService $persistLogLineDispatchService;
-
-    public function __construct(PersistLogLineDispatchService $persistLogLineDispatchService)
-    {
-        $this->persistLogLineDispatchService = $persistLogLineDispatchService;
+    public function __construct(
+        private MessageBusInterface $messageBus,
+    ) {
     }
-
     /**
      * @throws ExceptionInterface
      */
     public function __invoke(RawLogLineMessage $message): void
     {
-        $rawLine = $message->getLine();
-        $parsedLine = $this->parseLogLine($rawLine);
-        $this->persistLogLineDispatchService->dispatch($parsedLine);
+        $this->messageBus
+            ->dispatch(new LogLineMessage(
+                $this->parseLogLine(
+                    $message->getLine(),
+                )
+            ));
     }
-
-    private function parseLogLine(string $line): ?LogLineDto
+    private function parseLogLine(string $line): LogLineDto
     {
         $pattern = '/(?P<serviceName>[\w\-]+) - - \[(?P<date>[^\]]+)\] "[^"]*" (?P<statusCode>\d+)/';
 
@@ -41,6 +43,6 @@ final class RawLogLineMessageParseHandler
             return new LogLineDto($serviceName, $date, $statusCode);
         }
 
-        return null;
+        throw new \RuntimeException('Invalid log line format');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Tests\Command;
 
 use App\Command\ReadLogLinesCommand;
-use App\Service\ParseRawLogLineDispatchService;
 use App\Service\ReadNextUnprocessedLineService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -43,21 +42,20 @@ class ReadLogLinesCommandTest extends KernelTestCase
 
         $readNextUnprocessedLineService = new ReadNextUnprocessedLineService();
 
-        $parseRawLogLineDispatchService = new ParseRawLogLineDispatchService($this->bus());
 
         $parameterBagMock = $this->createMock(ParameterBagInterface::class);
 
         $parameterBagMock->method('get')->willReturnMap([
             ['kernel.project_dir', $kernel->getProjectDir()],
-            ['env(LOG_FILE_NAME)', 'logs-test.log'],
-            ['env(POSITION_FILE_NAME)', 'position-test.txt'],
+            ['log.filename', 'logs-test.log'],
+            ['log.position_filename', 'position-test.txt'],
         ]);
 
 
         $command = new ReadLogLinesCommand(
             $parameterBagMock,
             $readNextUnprocessedLineService,
-            $parseRawLogLineDispatchService
+            $this->bus()
         );
         $commandTester = new CommandTester($command);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use RuntimeException;
@@ -7,45 +9,42 @@ use RuntimeException;
 class ReadNextUnprocessedLineService
 {
     /**
-     * @var resource|null
-     */
-    protected $fileHandle = null;
-
-    /**
      * Reads the file starting from the last processed line pointer position.
      *
-     * @return string|null The next unprocessed line or null if no more lines are available.
+     * @return string|false The next unprocessed line or false if no more lines are available.
      */
-    public function read(string $filePath, string $positionFilePath): ?string
+    public function read(string $filePath, string $positionFilePath): string|false
     {
-        $this->openFile($filePath);
+        $fileHandle = $this->openFile($filePath);
 
         $currentPosition = file_exists($positionFilePath) ? (int) file_get_contents($positionFilePath) : 0;
-        fseek($this->fileHandle, $currentPosition);
+        fseek($fileHandle, $currentPosition);
 
-        $line = fgets($this->fileHandle);
+        $line = fgets($fileHandle);
         if ($line !== false) {
             $lineSize = strlen($line);
             $nextPosition = $lineSize + $currentPosition;
             file_put_contents($positionFilePath, $nextPosition);
         }
-        $this->closeFile();
+        $this->closeFile($fileHandle);
+
         return $line;
     }
 
-    private function openFile(string $filePath): void
+    /*** @return resource|false **/
+    private function openFile(string $filePath)
     {
-        $this->fileHandle = fopen($filePath, 'r');
-        if (! $this->fileHandle) {
+        if (! $fileHandle = fopen($filePath, 'r')) {
             throw new RuntimeException('Could not open file "' . $filePath . '"');
         }
+
+        return $fileHandle;
     }
 
-    private function closeFile(): void
+    private function closeFile($fileHandle): void
     {
-        if ($this->fileHandle !== null) {
-            fclose($this->fileHandle);
-            $this->fileHandle = null;
+        if ($fileHandle !== null) {
+            fclose($fileHandle);
         }
     }
 }

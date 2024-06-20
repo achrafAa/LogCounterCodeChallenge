@@ -2,11 +2,12 @@
 
 namespace App\Repository;
 
+use App\Dto\LogFilterDto;
 use App\Dto\LogLineDto;
 
 interface LogRecordsInterface
 {
-    public function getLogRecordsCount(array $filters = []): int;
+    public function getLogRecordsCount(LogFilterDto $logFilters): int;
 
-    public function addLogRecord(LogLineDto $logLineDto): bool;
+    public function addLogRecord(LogLineDto $logLineDto): void;
 }

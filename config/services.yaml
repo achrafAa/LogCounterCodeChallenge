@@ -4,8 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    env(LOG_FILE_NAME): '%env(LOG_FILE_NAME)%'
-    env(POSITION_FILE_NAME): '%env(POSITION_FILE_NAME)%'
+    log.filename: '%env(LOG_FILE_NAME)%'
+    log.position_filename: '%env(POSITION_FILE_NAME)%'
 
 services:
     # default configuration for services in *this* file
