@@ -39,6 +39,35 @@ V1 :
 - Checkout the first version solution:
     `git checkout solution-v1`
 
-This version ensures everything works correctly before optimizing the code and infrastructure to use OpenSearch for storing data, RabbitMQ for queue management, and Redis for caching the last position instead of storing it in a file.
+### Features Implemented in V1:
 
-Feel free to ask if you have any questions or need further assistance!
+-   **Reading Pointer Management:**
+    -   Implemented to manage the position of the reading pointer using a file-based approach.
+-   **Data Storage:**
+    -   Data is stored in MySQL database.
+-   **Queue Management:**
+    -   Messaging is handled using the Messenger component with database transport.
+
+### Goals Achieved in V1:
+
+-   **Functionality Assurance:**
+    -   Ensures all core functionalities work correctly.
+-   **Initial Implementation:**
+    -   Provides a foundational snapshot of the solution's quality and functionality.
+
+### Next Steps (V2):
+
+Moving forward, the focus will be on optimizing the code and infrastructure with the following enhancements:
+
+-   **Data Storage Optimization:**
+    -   Integrate OpenSearch for efficient data storage.
+-   **Queue Management Enhancement:**
+    -   Implement RabbitMQ for improved queue management.
+-   **Caching Strategy:**
+    -   Utilize Redis for caching the last position, replacing the current file-based approach.
+
+### Note:
+
+Due to time constraints, these enhancements will be addressed in the upcoming versions to avoid over-engineering and ensure timely delivery.
+
+Feel free to reach out if you have any questions or need further clarification!
