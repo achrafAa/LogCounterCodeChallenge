@@ -4,6 +4,7 @@ namespace App\Tests\Command;
 
 use App\Command\ReadLogLinesCommand;
 use App\Service\ReadNextUnprocessedLineService;
+use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -20,7 +21,7 @@ use Zenstruck\Messenger\Test\InteractsWithMessenger;
 class ReadLogLinesCommandTest extends KernelTestCase
 {
     use InteractsWithMessenger;
-
+    use ReloadDatabaseTrait;
     protected function setUp(): void
     {
         parent::setUp();

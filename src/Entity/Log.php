@@ -21,10 +21,10 @@ class Log
     private string $serviceName;
 
     #[ORM\Column]
-    private int $StatusCode;
+    private int $statusCode;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeInterface $Date;
+    private \DateTimeInterface $date;
 
     public function getId(): int
     {
@@ -45,24 +45,24 @@ class Log
 
     public function getStatusCode(): int
     {
-        return $this->StatusCode;
+        return $this->statusCode;
     }
 
-    public function setStatusCode(int $StatusCode): self
+    public function setStatusCode(int $statusCode): self
     {
-        $this->StatusCode = $StatusCode;
+        $this->statusCode = $statusCode;
 
         return $this;
     }
 
     public function getDate(): \DateTimeInterface
     {
-        return $this->Date;
+        return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $Date): self
+    public function setDate(\DateTimeInterface $date): self
     {
-        $this->Date = $Date;
+        $this->date = $date;
 
         return $this;
     }

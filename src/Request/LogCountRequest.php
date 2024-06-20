@@ -43,8 +43,9 @@ class LogCountRequest extends Request
             $request->getContent()
         );
 
-        $data = json_decode($this->getContent(), true);
-        $this->serviceNames = $data['serviceNames'] ?? null;
+        $data = $this->query->all();
+        $serviceNames = $data['serviceNames'] ?? null;
+        $this->serviceNames = $serviceNames ? explode(',', $serviceNames) : null;
         $this->statusCode = $data['statusCode'] ?? null;
         $this->startDate = $data['startDate'] ?? null;
         $this->endDate = $data['endDate'] ?? null;

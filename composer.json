@@ -26,6 +26,7 @@
         "symfony/yaml": "7.1.*"
     },
     "require-dev": {
+        "hautelook/alice-bundle": "^2.14",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.5",
         "rector/rector": "^1.1",
