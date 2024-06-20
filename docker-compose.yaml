@@ -24,7 +24,7 @@ services:
       - loganalyzerapi
 
   mysql:
-    image:  mysql:8.0
+    build: .docker/mysql
     container_name: mysql
     restart: unless-stopped
     tty: true
@@ -32,12 +32,12 @@ services:
       - "3306:3306"
 
     environment:
-      MYSQL_DATABASE: loganalyzer
       MYSQL_USER: user
       MYSQL_PASSWORD: strongPassword
       MYSQL_ROOT_PASSWORD: secret
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+# to persist Data
 #    volumes:
 #      - ./.mysql:/var/lib/mysql
     networks:
@@ -74,14 +74,15 @@ services:
     networks:
       - loganalyzerapi
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    environment:
+#      RABBITMQ_DEFAULT_USER: user
+#      RABBITMQ_DEFAULT_PASS: password
+
 #  redis:
 #    image: redis:alpine
 #    container_name: redis
